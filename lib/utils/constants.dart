@@ -28,4 +28,5 @@ class KeysConstants {
   static const String pages = 'pages';
   static const String next = 'next';
   static const String prev = 'prev';
+  static const String isDark = 'is_dark';
 }

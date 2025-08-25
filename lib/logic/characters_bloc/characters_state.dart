@@ -54,19 +54,11 @@ class CharactersLoaded extends CharactersState {
 
 class FavoriteCharactersLoaded extends CharactersState {
   final List<Character> characters;
-  final CharacterInfo info;
-  final int currentPage;
-  final bool hasReachedMax;
 
-  const FavoriteCharactersLoaded({
-    required this.characters,
-    required this.info,
-    required this.currentPage,
-    required this.hasReachedMax,
-  });
+  const FavoriteCharactersLoaded({required this.characters});
 
   @override
-  List<Object> get props => [characters, info, currentPage, hasReachedMax];
+  List<Object> get props => [characters];
 
   FavoriteCharactersLoaded copyWith({
     List<Character>? characters,
@@ -74,11 +66,6 @@ class FavoriteCharactersLoaded extends CharactersState {
     int? currentPage,
     bool? hasReachedMax,
   }) {
-    return FavoriteCharactersLoaded(
-      characters: characters ?? this.characters,
-      info: info ?? this.info,
-      currentPage: currentPage ?? this.currentPage,
-      hasReachedMax: hasReachedMax ?? this.hasReachedMax,
-    );
+    return FavoriteCharactersLoaded(characters: characters ?? this.characters);
   }
 }

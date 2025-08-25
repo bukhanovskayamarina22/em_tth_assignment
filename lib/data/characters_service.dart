@@ -3,7 +3,7 @@ import 'package:em_tth_assignment/data/sqflite.dart';
 import 'package:em_tth_assignment/utils/constants.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-class CharacterService {
+class CharactersService {
   final helper = DatabaseHelper();
 
   Future<List<Character>> getAllCharacters() async {
@@ -146,6 +146,12 @@ class CharacterService {
     };
 
     return db.update(TableNameConstants.characters, characterData, where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<void> changeFavorite({required int id, required bool isFavorite}) async {
+    final Database db = await helper.database;
+    final values = {'is_favorite': isFavorite ? 1 : 0};
+    await db.update(TableNameConstants.characters, values, where: 'id = ?', whereArgs: [id]);
   }
 
   Future<void> writeCharacters(List<Character> characters) async {

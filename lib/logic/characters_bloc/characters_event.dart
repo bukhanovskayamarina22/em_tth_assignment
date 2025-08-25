@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-//TODO: if they end up having no parameters - change to an enum
 abstract class CharactersEvent extends Equatable {
   const CharactersEvent();
 
@@ -22,4 +21,11 @@ class RefreshCharacters extends CharactersEvent {
 
 class LoadFavoriteCharacters extends CharactersEvent {
   const LoadFavoriteCharacters();
+}
+
+class ChangeCharacterFavorite extends CharactersEvent {
+  final int id;
+  final bool isFavorite;
+
+  const ChangeCharacterFavorite({required this.id, required this.isFavorite});
 }

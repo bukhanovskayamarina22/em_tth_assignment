@@ -1,39 +1,53 @@
 import 'package:bloc/bloc.dart';
+import 'package:em_tth_assignment/data/characters_service.dart';
 import 'package:em_tth_assignment/data/models.dart';
 import 'package:em_tth_assignment/data/preferences.dart';
 import 'package:em_tth_assignment/data/service.dart';
-import 'package:em_tth_assignment/logic/event.dart';
-import 'package:em_tth_assignment/logic/state.dart';
+import 'package:em_tth_assignment/logic/characters_bloc/characters_event.dart';
+import 'package:em_tth_assignment/logic/characters_bloc/characters_state.dart';
 
 class CharacterBloc extends Bloc<CharactersEvent, CharactersState> {
   final ApiService _apiService;
   final PreferencesHelper _preferencesHelper;
+  final CharactersService _charactersService;
 
-  CharacterBloc({required ApiService apiService, required PreferencesHelper preferencesHelper})
-    : _apiService = apiService,
-      _preferencesHelper = preferencesHelper,
-      super(const CharactersInitial()) {
+  CharacterBloc({
+    required ApiService apiService,
+    required PreferencesHelper preferencesHelper,
+    required CharactersService charactersService,
+  }) : _apiService = apiService,
+       _preferencesHelper = preferencesHelper,
+       _charactersService = charactersService,
+       super(const CharactersInitial()) {
     on<LoadAllCharacters>(_onLoadCharacters);
     on<LoadFavoriteCharacters>(_onLoadFavoriteCharacters);
     on<LoadNextPage>(_onLoadNextPage);
     on<RefreshCharacters>(_onRefreshCharacters);
+    on<ChangeCharacterFavorite>(_onChangeCharacterFavorite);
   }
 
   Future<void> _onLoadCharacters(LoadAllCharacters event, Emitter<CharactersState> emit) async {
     emit(const CharactersLoading());
-    await _fetchCharacters(emit, 1, []);
+    final savedCharacters = await _charactersService.getAllCharacters();
+    if (savedCharacters.isEmpty) {
+      await _fetchCharacters(emit, 1, []);
+    } else {
+      final info = await _preferencesHelper.getInfo();
+      final page = savedCharacters.length ~/ 20;
+      final hasReachedMax = getHasReachedMax(page: page, info: info);
+
+      emit(CharactersLoaded(characters: savedCharacters, info: info, currentPage: page, hasReachedMax: hasReachedMax));
+    }
   }
 
   Future<void> _onLoadFavoriteCharacters(LoadFavoriteCharacters event, Emitter<CharactersState> emit) async {
-    emit(
-      //TODO: update those next and prev, read what they are supposed to do
-      FavoriteCharactersLoaded(
-        characters: const [],
-        info: CharacterInfo(count: 1, pages: 1, next: 'asdf', prev: 'dfgh'),
-        currentPage: 0,
-        hasReachedMax: true,
-      ),
-    );
+    final List<Character> characters = await _getFavoriteCharacters();
+    emit(FavoriteCharactersLoaded(characters: characters));
+  }
+
+  Future<List<Character>> _getFavoriteCharacters() async {
+    final characters = await _charactersService.getFavoriteCharacters();
+    return characters;
   }
 
   Future<void> _onLoadNextPage(LoadNextPage event, Emitter<CharactersState> emit) async {
@@ -58,11 +72,11 @@ class CharacterBloc extends Bloc<CharactersEvent, CharactersState> {
       final response = await _apiService.getCharacters(page: page);
 
       await _saveToPreferences(response.info);
+      await _writeCharacters(response.results);
 
       final allCharacters = page == 1 ? response.results : [...existingCharacters, ...response.results];
 
-      final maxPages = await _preferencesHelper.getCount() ?? 0;
-      final hasReachedMax = page >= maxPages || response.info.next == null;
+      final hasReachedMax = getHasReachedMax(page: page, info: response.info);
 
       emit(
         CharactersLoaded(
@@ -83,6 +97,25 @@ class CharacterBloc extends Bloc<CharactersEvent, CharactersState> {
     }
   }
 
+  Future<void> _onChangeCharacterFavorite(ChangeCharacterFavorite event, Emitter<CharactersState> emit) async {
+    await _updateCharacterFavorite(id: event.id, isFavorite: event.isFavorite);
+    List<Character> characters = [];
+    if (state is CharactersLoaded) {
+      final currentState = state as CharactersLoaded;
+      // characters = await _charactersService.getAllCharacters();
+      characters = [...currentState.characters];
+      final index = characters.indexWhere((c) => c.id == event.id);
+      final updatedCharacter = characters[index].copyWith(isFavorite: event.isFavorite);
+      characters[index] = updatedCharacter;
+      emit(currentState.copyWith(characters: characters));
+    } else if (state is FavoriteCharactersLoaded) {
+      final characters = await _getFavoriteCharacters();
+      emit(FavoriteCharactersLoaded(characters: characters));
+    }
+  }
+
+  bool getHasReachedMax({required int page, required CharacterInfo info}) => page >= info.count || info.next == null;
+
   Future<void> _saveToPreferences(CharacterInfo info) async {
     await _preferencesHelper.setCount(info.count);
     await _preferencesHelper.setPages(info.pages);
@@ -94,6 +127,14 @@ class CharacterBloc extends Bloc<CharactersEvent, CharactersState> {
     if (info.prev != null) {
       await _preferencesHelper.setPrev(info.prev!);
     }
+  }
+
+  Future<void> _writeCharacters(List<Character> characters) async {
+    await _charactersService.writeCharacters(characters);
+  }
+
+  Future<void> _updateCharacterFavorite({required int id, required bool isFavorite}) async {
+    await _charactersService.changeFavorite(id: id, isFavorite: isFavorite);
   }
 }
 

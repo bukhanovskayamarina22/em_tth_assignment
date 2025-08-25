@@ -3,6 +3,7 @@ import 'package:em_tth_assignment/data/models.dart';
 import 'package:em_tth_assignment/main.dart';
 import 'package:em_tth_assignment/utils/constants.dart';
 
+//TODO: split into 2 files
 class ApiService {
   Future<CharacterInfoAndData> getCharacters({int page = 1}) async {
     final map = await DioService().get(ApiConstants.character, page);

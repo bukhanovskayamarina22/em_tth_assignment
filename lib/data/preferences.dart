@@ -1,3 +1,4 @@
+import 'package:em_tth_assignment/data/models.dart';
 import 'package:em_tth_assignment/utils/constants.dart';
 import 'package:em_tth_assignment/utils/extensions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -5,6 +6,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 class PreferencesHelper {
   Future<SharedPreferences> _getPrefs() async {
     return SharedPreferences.getInstance();
+  }
+
+  Future<bool> getIsDark() async {
+    final prefs = await _getPrefs();
+    return prefs.getBool(KeysConstants.isDark) ?? false;
+  }
+
+  Future<void> setIsDark(bool isDark) async {
+    final prefs = await _getPrefs();
+    await prefs.setBool(KeysConstants.isDark, isDark);
   }
 
   Future<int?> getCount() async {
@@ -47,6 +58,14 @@ class PreferencesHelper {
   Future<void> setPrev(String? prev) async {
     final prefs = await _getPrefs();
     await prefs.setString(KeysConstants.prev, prev ?? '');
+  }
+
+  Future<CharacterInfo> getInfo() async {
+    final count = await getCount();
+    final pages = await getPages();
+    final next = await getNext();
+    final prev = await getPrev();
+    return CharacterInfo(count: count ?? 0, pages: pages ?? 0, next: next, prev: prev);
   }
 
   Future<void> clear() async {

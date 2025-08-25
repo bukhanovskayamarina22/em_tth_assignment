@@ -23,13 +23,11 @@ class DatabaseHelper {
 
   Future<void> _onCreate(Database db, int version) async {
     await db.transaction((txn) async {
-      // TODO: refactor all the keywords out
-      //TODO: move url check out
       await txn.execute('''
      CREATE TABLE ${TableNameConstants.origins} (
        id INTEGER PRIMARY KEY,
        name TEXT NOT NULL UNIQUE,
-       url TEXT NOT NULL UNIQUE CHECK (url LIKE 'http%' OR url LIKE 'https%')
+       url TEXT NOT NULL UNIQUE ${SqlConstants.urlCheck}
      )
    ''');
 
@@ -37,14 +35,14 @@ class DatabaseHelper {
     CREATE TABLE ${TableNameConstants.locations} (
       id INTEGER PRIMARY KEY,
       name TEXT NOT NULL UNIQUE,
-      url TEXT NOT NULL UNIQUE CHECK (url LIKE 'http%' OR url LIKE 'https%')
+      url TEXT NOT NULL UNIQUE ${SqlConstants.urlCheck}
     )
   ''');
 
       await txn.execute('''
     CREATE TABLE ${TableNameConstants.episodes} (
       id INTEGER PRIMARY KEY,
-      url TEXT NOT NULL UNIQUE CHECK (url LIKE 'http%' OR url LIKE 'https%')
+      url TEXT NOT NULL UNIQUE ${SqlConstants.urlCheck}
     )
   ''');
 
@@ -62,7 +60,7 @@ class DatabaseHelper {
       image TEXT NOT NULL UNIQUE,
       created DATETIME NOT NULL,
       episode_id INTEGER,
-      url TEXT CHECK (url LIKE 'http%' OR url LIKE 'https%'),
+      url TEXT ${SqlConstants.urlCheck},
       is_favorite BOOL NOT NULL DEFAULT false,
       FOREIGN KEY (origin_id) REFERENCES origins (id),
       FOREIGN KEY (location_id) REFERENCES locations (id),

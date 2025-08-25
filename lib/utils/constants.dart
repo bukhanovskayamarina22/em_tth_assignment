@@ -6,6 +6,7 @@ class TextConstants {
   static const favorites = 'Favorites';
   static const error = 'Error: ';
   static const retry = 'Retry';
+  static const nothingLeft = 'Nothing left';
 }
 
 class ApiConstants {
@@ -17,7 +18,7 @@ class ApiConstants {
 }
 
 class SqlConstants {
-  static const String urlCheck = "CHECK (url LIKE 'http%' OR url LIKE 'https%'";
+  static const String urlCheck = "CHECK (url LIKE 'http%' OR url LIKE 'https%')";
 }
 
 class TableNameConstants {

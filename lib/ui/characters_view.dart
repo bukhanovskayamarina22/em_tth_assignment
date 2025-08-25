@@ -26,7 +26,7 @@ class CharacterView extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Error: ${state.message}'),
+                  Text('${TextConstants.error}${state.message}'),
                   ElevatedButton(
                     onPressed: () => context.read<CharacterBloc>().add(const LoadAllCharacters()),
                     child: const Text(TextConstants.retry),

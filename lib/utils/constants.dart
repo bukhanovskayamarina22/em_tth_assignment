@@ -7,6 +7,9 @@ class TextConstants {
   static const error = 'Error: ';
   static const retry = 'Retry';
   static const nothingLeft = 'Nothing left';
+  static const status = 'Status: ';
+  static const type = 'Type: ';
+  static const unknown = 'unknown: ';
 }
 
 class ApiConstants {

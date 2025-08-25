@@ -1,5 +1,6 @@
 import 'package:em_tth_assignment/data/models.dart';
 import 'package:em_tth_assignment/ui/favorite_button.dart';
+import 'package:em_tth_assignment/utils/constants.dart';
 import 'package:flutter/material.dart';
 
 class CharacterCard extends StatefulWidget {
@@ -95,7 +96,7 @@ class _CharacterCardState extends State<CharacterCard> {
                       text: TextSpan(
                         style: DefaultTextStyle.of(context).style.copyWith(fontSize: detailsFontSize),
                         children: [
-                          const TextSpan(text: 'Status: ', style: TextStyle(fontWeight: FontWeight.w600)),
+                          const TextSpan(text: TextConstants.status, style: TextStyle(fontWeight: FontWeight.w600)),
                           TextSpan(text: widget.character.status),
                         ],
                       ),
@@ -107,8 +108,8 @@ class _CharacterCardState extends State<CharacterCard> {
                       text: TextSpan(
                         style: DefaultTextStyle.of(context).style.copyWith(fontSize: detailsFontSize),
                         children: [
-                          const TextSpan(text: 'Type: ', style: TextStyle(fontWeight: FontWeight.w600)),
-                          TextSpan(text: widget.character.type.isEmpty ? 'Unknown' : widget.character.type),
+                          const TextSpan(text: TextConstants.type, style: TextStyle(fontWeight: FontWeight.w600)),
+                          TextSpan(text: widget.character.type.isEmpty ? TextConstants.unknown : widget.character.type),
                         ],
                       ),
                       maxLines: 1,

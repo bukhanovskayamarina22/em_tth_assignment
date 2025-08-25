@@ -1,10 +1,11 @@
 import 'package:bloc/bloc.dart';
-import 'package:em_tth_assignment/data/characters_service.dart';
+import 'package:em_tth_assignment/data/db/characters_service.dart';
+import 'package:em_tth_assignment/data/http/api_service.dart';
 import 'package:em_tth_assignment/data/models.dart';
 import 'package:em_tth_assignment/data/preferences.dart';
-import 'package:em_tth_assignment/data/service.dart';
 import 'package:em_tth_assignment/logic/characters_bloc/characters_event.dart';
 import 'package:em_tth_assignment/logic/characters_bloc/characters_state.dart';
+import 'package:em_tth_assignment/main.dart';
 
 class CharacterBloc extends Bloc<CharactersEvent, CharactersState> {
   final ApiService _apiService;
@@ -46,8 +47,17 @@ class CharacterBloc extends Bloc<CharactersEvent, CharactersState> {
   }
 
   Future<List<Character>> _getFavoriteCharacters() async {
-    final characters = await _charactersService.getFavoriteCharacters();
-    return characters;
+    try {
+      final characters = await _charactersService.getFavoriteCharacters();
+      return characters;
+    } catch (error, stack) {
+      logger.e('''
+       Error in CharacterBloc._fetchCharacters: 
+       Error: $error,
+       Stack: $stack,
+       ''');
+      rethrow;
+    }
   }
 
   Future<void> _onLoadNextPage(LoadNextPage event, Emitter<CharactersState> emit) async {
@@ -86,7 +96,15 @@ class CharacterBloc extends Bloc<CharactersEvent, CharactersState> {
           hasReachedMax: hasReachedMax,
         ),
       );
-    } catch (error) {
+    } catch (error, stack) {
+      logger.e('''
+       Error in CharacterBloc._fetchCharacters: 
+       Error: $error,
+       Stack: $stack,
+       Parameters:
+          page: $page,
+          existingCharacters: $existingCharacters
+       ''');
       emit(
         CharactersError(
           message: error.toString(),
@@ -102,7 +120,6 @@ class CharacterBloc extends Bloc<CharactersEvent, CharactersState> {
     List<Character> characters = [];
     if (state is CharactersLoaded) {
       final currentState = state as CharactersLoaded;
-      // characters = await _charactersService.getAllCharacters();
       characters = [...currentState.characters];
       final index = characters.indexWhere((c) => c.id == event.id);
       final updatedCharacter = characters[index].copyWith(isFavorite: event.isFavorite);
@@ -117,24 +134,59 @@ class CharacterBloc extends Bloc<CharactersEvent, CharactersState> {
   bool getHasReachedMax({required int page, required CharacterInfo info}) => page >= info.count || info.next == null;
 
   Future<void> _saveToPreferences(CharacterInfo info) async {
-    await _preferencesHelper.setCount(info.count);
-    await _preferencesHelper.setPages(info.pages);
+    try {
+      await _preferencesHelper.setCount(info.count);
+      await _preferencesHelper.setPages(info.pages);
 
-    if (info.next != null) {
-      await _preferencesHelper.setNext(info.next!);
-    }
+      if (info.next != null) {
+        await _preferencesHelper.setNext(info.next!);
+      }
 
-    if (info.prev != null) {
-      await _preferencesHelper.setPrev(info.prev!);
+      if (info.prev != null) {
+        await _preferencesHelper.setPrev(info.prev!);
+      }
+    } catch (error, stack) {
+      logger.e('''
+       Error in CharacterBloc._saveToPreferences: 
+       Error: $error,
+       Stack: $stack,
+       Parameters:
+          info: $info
+       ''');
+
+      rethrow;
     }
   }
 
   Future<void> _writeCharacters(List<Character> characters) async {
-    await _charactersService.writeCharacters(characters);
+    try {
+      await _charactersService.writeCharacters(characters);
+    } catch (error, stack) {
+      logger.e('''
+       Error in CharacterBloc._writeCharacters: 
+       Error: $error,
+       Stack: $stack,
+       Parameters:
+          characters: $characters
+       ''');
+      rethrow;
+    }
   }
 
   Future<void> _updateCharacterFavorite({required int id, required bool isFavorite}) async {
-    await _charactersService.changeFavorite(id: id, isFavorite: isFavorite);
+    try {
+      await _charactersService.changeFavorite(id: id, isFavorite: isFavorite);
+    } catch (error, stack) {
+      logger.e('''
+       Error in CharacterBloc._updateCharacterFavorite: 
+       Error: $error,
+       Stack: $stack,
+       Parameters:
+          id: $id,
+          isFavorite: $isFavorite
+       ''');
+      rethrow;
+    }
   }
 }
 

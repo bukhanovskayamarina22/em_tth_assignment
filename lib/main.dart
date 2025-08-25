@@ -1,9 +1,9 @@
 import 'dart:math' as math;
 
-import 'package:em_tth_assignment/data/characters_service.dart';
+import 'package:em_tth_assignment/data/db/characters_service.dart';
+import 'package:em_tth_assignment/data/http/api_service.dart';
 import 'package:em_tth_assignment/data/models.dart';
 import 'package:em_tth_assignment/data/preferences.dart';
-import 'package:em_tth_assignment/data/service.dart';
 import 'package:em_tth_assignment/logic/characters_bloc/characters_bloc.dart';
 import 'package:em_tth_assignment/logic/characters_bloc/characters_event.dart';
 import 'package:em_tth_assignment/logic/characters_bloc/characters_state.dart';
@@ -83,12 +83,11 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      //TODO: move out labels
       body: _selectedIndex == 0 ? const AllCharactersPage() : const FavoriteCharactersPage(),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Characters'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favorites'),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: TextConstants.charactersLabel),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: TextConstants.favoritesLabel),
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
@@ -138,7 +137,7 @@ class CharacterView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Characters')),
+      appBar: AppBar(title: const Text(TextConstants.charactersLabel)),
       body: BlocBuilder<CharacterBloc, CharactersState>(
         builder: (context, state) {
           if (state is CharactersInitial || state is CharactersLoading) {

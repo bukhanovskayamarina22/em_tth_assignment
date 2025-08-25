@@ -31,7 +31,7 @@ class CharacterInfo {
   final String? next;
   final String? prev;
 
-  CharacterInfo({required this.count, required this.pages, required this.next, required this.prev});
+  CharacterInfo({required this.count, required this.pages, this.next, this.prev});
 
   factory CharacterInfo.fromMap(Map<String, dynamic> map) {
     return CharacterInfo(
@@ -40,6 +40,11 @@ class CharacterInfo {
       next: map['next'] as String?,
       prev: map['prev'] as String?,
     );
+  }
+
+  @override
+  String toString() {
+    return 'CharacterInfo(count: $count, pages: $pages, next: $next, prev: $prev)';
   }
 }
 
@@ -121,6 +126,13 @@ class Character {
       isFavorite: isFavorite ?? this.isFavorite,
     );
   }
+
+  @override
+  String toString() {
+    return 'Character(id: $id, name: $name, status: $status, species: $species, type: $type, gender: $gender, '
+        'origin: $origin, location: $location, image: $image, '
+        'episode: $episode, url: $url, created: $created, isFavorite: $isFavorite)';
+  }
 }
 
 class Origin {
@@ -132,6 +144,11 @@ class Origin {
   factory Origin.fromMap(Map<String, dynamic> map) {
     return Origin(name: map['name'] as String, url: map['url'] as String);
   }
+
+  @override
+  String toString() {
+    return 'Origin(name: $name, url: $url)';
+  }
 }
 
 class Location {
@@ -142,5 +159,10 @@ class Location {
 
   factory Location.fromMap(Map<String, dynamic> map) {
     return Location(name: map['name'] as String, url: map['url'] as String);
+  }
+
+  @override
+  String toString() {
+    return 'Location(name: $name, url: $url)';
   }
 }

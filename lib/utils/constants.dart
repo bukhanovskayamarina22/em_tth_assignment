@@ -2,6 +2,10 @@
 class TextConstants {
   static const appName = 'Rick and Morty characters';
   static const loadMore = 'Load More';
+  static const characters = 'Characters';
+  static const favorites = 'Favorites';
+  static const error = 'Error: ';
+  static const retry = 'Retry';
 }
 
 class ApiConstants {

@@ -1,5 +1,5 @@
+import 'package:em_tth_assignment/data/db/sqflite.dart';
 import 'package:em_tth_assignment/data/models.dart';
-import 'package:em_tth_assignment/data/sqflite.dart';
 import 'package:em_tth_assignment/utils/constants.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
